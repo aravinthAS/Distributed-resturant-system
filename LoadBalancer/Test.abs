@@ -1,0 +1,20 @@
+module Test;
+
+import * from Load_balancer;
+
+{
+DB db = new Database(23);
+Queue q1 = new Queue(53);
+LoadBalancer lb = new RoundRobinLoadBalancer();
+Worker w1 = new WorkerObject(db, q1);
+Worker w2 = new WorkerObject(db, q1);
+Worker w3 = new WorkerObject(db, q1);
+lb.addWorker(w1);
+lb.addWorker(w2);
+lb.getWorker();
+lb.addWorker(w3);
+lb.releaseWorker(w1);
+//Hvis jeg bruker << lb.releaseWorker(w2); >> her, så blir det feil
+lb.firingWorker();
+/*###TEST PASSED###*/
+}

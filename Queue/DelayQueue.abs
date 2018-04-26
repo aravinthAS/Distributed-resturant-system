@@ -1,0 +1,79 @@
+module DelayQueue;
+export *;
+import * from Config;
+
+/* En Queue objekt har null til flere Task i køen sin, og
+har metoder for legge til Task(insert(Task t)), fjerne Task(remove())...*/
+interface DelayQueue{
+  Unit insert(Data_ID db_id, Int interval_time);
+  Unit remove(Data_ID db_id);
+  Unit waiting(Data_ID db_id, Int startTime, Int interval_time);
+  Int emergency_alert();
+}
+
+
+class DelayQueue(Channel channelId, Queue q_send, DB db, Stat stat) implements DelayQueue {
+  Map<Data_ID, Int> inQueue = map[];
+  Int emergency_alert = 0;
+  Unit waiting(Data_ID db_id, Int startTime, Int interval_time){
+    Set<Data_ID> keys = keys(inQueue);
+    Int length_of_inQueue = size(keys);
+    if (length_of_inQueue > limited_order_on_the_same_time()){ emergency_alert = 1;}
+    else{ emergency_alert = 0;}
+    Data systemInfo = db.getData(systemInfo_id());
+    Int tmp_cnt_chef = numberOfChefs(systemInfo);
+    Int now = truncate(timeValue(now()));
+
+    await this!sort(db_id, startTime, interval_time);
+    await this!insert(db_id, interval_time);
+
+    //delay the order, if the order have rest time
+    while(fromJust(lookup(inQueue, db_id)) > 0){
+      await duration(1, 1);
+      inQueue = insert(inQueue, Pair(db_id, fromJust(lookup(inQueue, db_id)) - 1));
+    }
+    q_send!insert(db_id);
+    this.remove(db_id);
+  }
+  Unit sort(Data_ID db_id, Int startTime, Int interval_time){
+    Set<Data_ID> keys = keys(inQueue);
+    Data_ID tmp_id = 0;
+    Data systemInfo = db.getData(systemInfo_id());
+    Int tmp_cnt_chef = numberOfChefs(systemInfo);
+    Int now = truncate(timeValue(now()));
+    Data newOrder = db.getData(db_id);
+    Int endTime = endTime(newOrder);
+
+    while(size(keys) != 0){
+      tmp_id = take(keys);
+      Data tmp_order = db.getData(tmp_id);
+      Int tmp_endtime = endTime(tmp_order);
+      if(startTime < endTime(tmp_order) && (startTime > (endTime(tmp_order) - orderCost(tmp_order)) || endTime(tmp_order) == endTime)){
+        tmp_cnt_chef = tmp_cnt_chef - 1;
+        if(tmp_cnt_chef < 1){
+          tmp_order = Order(client(tmp_order), sandwiches(tmp_order), repetitions(tmp_order),
+          repetitionsInterval(tmp_order), orderCost(tmp_order), startTime);
+          db.updateData(tmp_id, tmp_order);
+          Int tmp_startTime = endTime(tmp_order) - orderCost(tmp_order);
+          inQueue = insert(inQueue, Pair(tmp_id, tmp_startTime - now));
+          await stat!increase_changed_endtime();
+          //this.sort(tmp_id, tmp_startTime, tmp_startTime - now);
+        }
+      }
+      keys = remove(keys, tmp_id);
+    }
+  }
+
+  Unit insert(Data_ID db_id, Int interval_time){ //maybe change name to addTask
+    inQueue = insert(inQueue, Pair(db_id, interval_time));
+    printTCHC(timeValue(now()), channelId,"Added a new Task, Task ID: "+ toString(db_id));
+  }
+  Unit remove(Data_ID db_id){
+    if(lookup(inQueue, db_id) != Nothing){
+      inQueue = removeKey(inQueue, db_id);
+    }
+  }
+  Int emergency_alert(){
+    return emergency_alert;
+  }
+}

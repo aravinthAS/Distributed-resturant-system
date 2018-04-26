@@ -1,0 +1,31 @@
+module Test;
+import * from Database;
+
+{
+
+Task t1 = new Task(1);
+Task t2 = new Task(2);
+Task t3 = new Task(3);
+Task t4 = new Task(4);
+Task t5 = new Task(5);
+
+DB minDb = new Database(22);
+minDb.insertData(t1);
+minDb.insertData(t2);
+minDb.insertData(t3);
+minDb.insertData(t4);
+
+minDb.removeData(3);
+Map<Int, Task> minBeholder = minDb.getDatabase();
+
+println(toString(minBeholder)); //Map<Int, Task> testDatabase = minDb!getDatabase();
+
+Pair<Int, String> pair = Pair(12, "FKJK");
+println(toString(pair));
+Map<Int, String> m = map[Pair(1,"ABS"), Pair(3, "SACO")];
+m = insert(m, pair);
+println(toString(m));
+println(toString(values(m)));
+println(toString(removeKey(m, 12)));
+
+}

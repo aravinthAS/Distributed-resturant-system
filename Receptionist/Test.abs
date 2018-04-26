@@ -1,0 +1,11 @@
+module Test;
+import * from Receptionist;
+
+
+{
+
+DB db = new Database(23);
+Queue q1 = new Queue(56);
+Worker w1 = new WorkerObject(db, q1);
+
+}

@@ -1,0 +1,78 @@
+module Stat;
+export *;
+import * from Config;
+
+interface Stat{
+	Unit increase_success_delivery();
+	Unit increase_failed_delivery();
+	Unit increase_changed_endtime();
+	Unit increase_unchanged_endtime();
+	Int get_success_delivery();
+	Int get_failed_delivery();
+	Int get_changed_endtime();
+	Int get_unchanged_endtime();
+	Unit increase_total_order();
+	Int get_total_order();
+	Unit set_start_time(Time t);
+	Unit set_end_time(Time t);
+	Rat get_total_time_used();
+}
+
+class Stat() implements Stat{
+	Int success_delivery = 0;
+	Int failed_delivery = 0;
+	Int changed_endtime = 0;
+	Int unchanged_endtime = 0;
+	Int total_order = 0;
+	Time start_time = now();
+	Time end_time = now();
+
+	Unit increase_success_delivery(){
+		success_delivery = success_delivery + 1;
+	}
+
+	Unit increase_failed_delivery(){
+		failed_delivery = failed_delivery + 1;
+	}
+
+	Unit increase_changed_endtime(){
+		changed_endtime = changed_endtime + 1;
+	}
+
+	Unit increase_unchanged_endtime(){
+		unchanged_endtime = unchanged_endtime + 1;
+	}
+
+	Unit increase_total_order(){
+		total_order = total_order + 1;
+	}
+	Unit set_start_time(Time t){
+		start_time = t;
+		println("Timestart: " + toString(start_time));
+	}
+	Unit set_end_time(Time t){
+		end_time = t;
+		println("Timeend: " + toString(end_time));
+	}
+
+	Int get_success_delivery(){
+		return success_delivery;
+	}
+
+	Int get_failed_delivery(){
+		return failed_delivery;
+	}
+
+	Int get_changed_endtime(){
+		return changed_endtime;
+	}
+	Int get_total_order(){
+		return total_order;
+	}
+	Int get_unchanged_endtime(){
+		return ((success_delivery + failed_delivery) - changed_endtime); //unchanged_endtime;
+	}
+	Rat get_total_time_used(){
+		return timeValue(end_time) - timeValue(start_time);
+	}
+}

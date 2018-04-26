@@ -1,0 +1,78 @@
+module Config;
+
+export *;
+export * from Client;
+export * from Receptionist;
+export * from Database;
+export * from Queue;
+export * from Load_balancer;
+export * from Chef;
+export * from Waiter;
+export * from Manager;
+export * from DelayQueue;
+export * from Stat;
+
+import * from Client;
+import * from Receptionist;
+import * from Database;
+import * from Queue;
+import * from Load_balancer;
+import * from Chef;
+import * from Waiter;
+import * from Manager;
+import * from DelayQueue;
+import * from Stat;
+
+type Data_ID = Int; //This will be given by Database
+type Channel = String;
+type Sandwich_ID = Int;
+type Sandwich_name = String;
+type Product_ID = Int;
+type Product_cnt = Int;
+type Ingredient = String;
+type Sandwiches = Map<Int, Data>;
+type Ingredients = Map<Int, Ingredient>;
+/************** SUBWAY SYSTEM*************************/
+
+// Use same Database-object
+data Data = Sandwich(Sandwich_name sandwichName,
+List<Pair<Product_ID, Product_cnt>> ingredients,
+Int cost) |
+Order(Client client,
+List<Sandwich_ID> sandwiches,
+Int repetitions,
+Int repetitionsInterval,
+Int orderCost,
+Int endTime) |
+Ingredient(String ingredient) |
+SystemInfo(Int numberOfChefs);
+def Int systemInfo_id () = 0;
+def Int limited_order_on_the_same_time() = 5;
+
+/************************ PRINT SYSTEM ***********************************/
+def Int give_print_id () = 3;
+/* Print ID:
+*   0	 Print out [Time_X] [Client | Channel] [Content_message]
+*   1	 Print out all orders
+*   2	 Print out all queue statues
+*   3	 Print out [Time_X] [Content_message]
+*   4 Print just Statistic, But all option have Statistic
+*/
+def Unit printTC(Rat time, String content) =
+if give_print_id() == 3 then println("[Time: "+toString(time)+"] "+content)
+else printTC1(time, content);
+
+def Unit printTC1(Rat time, String content) = print("");
+
+def Unit printTCLC(Rat time, Int clientId, String content) =
+if give_print_id() == 0 then println("[Time: "+toString(time)+"] [Client "+toString(clientId)+"] "+ content) else print("");
+
+def Unit printTCHC(Rat time, Channel channelId, String content) =
+if give_print_id() == 0 then println("[Time: "+toString(time)+"] [Channel "+toString(channelId)+"] "+ content) else print("");
+
+def Unit printOrder(Int clientId, List<Sandwich_ID> sandwiches, Int repetition, Int interval, Int endTime) = if give_print_id() == 1 then println("************************\n     Order\n************************\n* Client: "+ toString(clientId)+"\n* Sandwich(es): "+ printOrder_help(sandwiches)+"\n* rep: "+ toString(repetition) + "\n* Delay time: "+ toString(interval)+"\n************************") else print("");
+def String printOrder_help(List<Sandwich_ID> sandwiches) =
+case sandwiches {
+  Nil => "";
+  Cons(x, y) => toString(x) + ", " + printOrder_help(y);
+};

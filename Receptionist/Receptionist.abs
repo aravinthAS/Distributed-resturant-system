@@ -1,0 +1,24 @@
+module Receptionist;
+export *;
+import * from Config;
+
+
+interface Receptionist {
+  Unit doTask(Data order);
+}
+class Receptionist(DB db, Queue q_to, LoadBalancer lb, Stat stat) implements Receptionist
+{
+  Unit doTask(Data order){
+    Data_ID db_id = await db!insertData(order); // Skrive ut til Databasen
+    await q_to!insert(db_id); // sende til køen
+    await stat!increase_total_order();
+    duration(1/2, 1);
+    await stat!set_end_time(now());
+    lb.releaseReceptionist(this); // frigjøre Worker to available
+  }
+}
+
+/*
+* Men kan vi ikke legge Receptionist som alle andre, venter på job,
+* await getTask or something? Nei fordi det er her først iden fra databasen kommer inn
+*/

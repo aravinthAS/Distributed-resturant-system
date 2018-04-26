@@ -1,0 +1,38 @@
+module Queue;
+export *;
+import * from Config;
+
+/* En Queue objekt har null til flere Task i køen sin, og
+har metoder for legge til Task(insert(Task t)), fjerne Task(remove())...*/
+interface Queue{
+  Data_ID insert(Data_ID db_id);
+  Data_ID getTask();
+  Int getQueueLength();
+}
+
+
+class Queue(Channel channelId) implements Queue {
+  List<Data_ID> inQueue = Nil;
+
+  Unit run(){
+    Int ql = await this!getQueueLength();
+    printTCHC(timeValue(now()), channelId, "Queue Length: " + toString(ql));
+  }
+  Data_ID insert(Data_ID db_id){ //maybe change name to addTask
+    inQueue = appendright(inQueue, db_id);
+    printTCHC(timeValue(now()), channelId,"Added a new Task, Task ID: "+ toString(db_id));
+    this!run();
+    return db_id;
+  }
+  Data_ID getTask(){
+    await (inQueue != Nil);
+    Data_ID db_id = head(inQueue);
+    inQueue = tail(inQueue);
+    printTCHC(timeValue(now()), channelId, "Remove Task ID " + toString(db_id));
+    return db_id;
+  }
+  Int getQueueLength(){
+    Int a = length(inQueue);
+    return a;
+  }
+}

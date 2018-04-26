@@ -1,0 +1,146 @@
+module Test_Order_temp;
+
+import * from Config;
+
+{
+  //Declared database
+  DB db_Orders = new Database("Orders"); // for Order(1, ->, sandwiches(-1, -499), Ingredient(<-, -500), SystemInfo(0)
+
+  //Init database
+  Data systemInfo = SystemInfo(0);
+  db_Orders!updateData(0, systemInfo);
+
+  Data s1 = Sandwich("Black Forest Ham", list[
+  Pair(1, 3),
+  Pair(5, 3),
+  Pair(6, 3)], 4);
+  Data s2 = Sandwich("Chicken & Bacon Ranch Melt", list[
+  Pair(1, 3),
+  Pair(5, 3),
+  Pair(6, 3)], 4);
+  Data s3 = Sandwich("Cold Cut Combo", list[
+  Pair(2, 3),
+  Pair(3, 3),
+  Pair(4, 3)], 3);
+  Data s4 = Sandwich("Italian B.M.R", list[
+  Pair(1, 3),
+  Pair(7, 3),
+  Pair(2, 3)], 2);
+  Data s5 = Sandwich("Meatball Marinara", list[
+  Pair(1, 3),
+  Pair(5, 3),
+  Pair(6, 3),
+  Pair(7, 2),
+  Pair(9, 2)], 7);
+
+  /* Sandwiches */
+  db_Orders!updateData(-1, s1);
+  db_Orders!updateData(-2, s2);
+  db_Orders!updateData(-3, s3);
+  db_Orders!updateData(-4, s4);
+  db_Orders!updateData(-5, s5);
+
+  /* INGREDIENTS */
+  db_Orders!updateData(-500, Ingredient("Tomat"));
+  db_Orders!updateData(-501, Ingredient("Agurk"));
+  db_Orders!updateData(-502, Ingredient("SkiltAgurk"));
+  db_Orders!updateData(-503, Ingredient("Roastbiff"));
+  db_Orders!updateData(-504, Ingredient("Skinke"));
+  db_Orders!updateData(-505, Ingredient("Gul-Ost"));
+  db_Orders!updateData(-506, Ingredient("Norwega Ost"));
+  db_Orders!updateData(-507, Ingredient("Majones"));
+  db_Orders!updateData(-508, Ingredient("Smør"));
+  db_Orders!updateData(-509, Ingredient("Fin baguette"));
+  db_Orders!updateData(-510, Ingredient("Grov baguette"));
+  db_Orders!updateData(-511, Ingredient("Paprika"));
+
+  //Statistic purpose
+  Stat stat = new Stat();
+
+  //Queues
+  Queue q1_RM = new Queue("Receptionist-Manager");
+  Queue q2_MC = new Queue("Manager-Chef");
+  Queue q3_CW = new Queue("Chef-Waiter");
+
+  DelayQueue dq = new DelayQueue("Delay", q1_RM, db_Orders, stat);
+
+  LoadBalancer lb = new RoundRobinLoadBalancer();
+  lb!printSystem(q1_RM, q2_MC, q3_CW);
+  Receptionist f1 = new Receptionist(db_Orders, q1_RM, lb);
+  Receptionist f2 = new Receptionist(db_Orders, q1_RM, lb);
+  Receptionist f3 = new Receptionist(db_Orders, q1_RM, lb);
+  Receptionist f4 = new Receptionist(db_Orders, q1_RM, lb);
+  Receptionist f5 = new Receptionist(db_Orders, q1_RM, lb);
+
+  lb.addReceptionist(f1);
+  /*lb.addReceptionist(f2);
+  lb.addReceptionist(f3);
+  lb.addReceptionist(f4);
+  lb.addReceptionist(f5);
+  */
+  Manager sc = new Manager(q1_RM, q2_MC, db_Orders, dq);
+  //Manager sc2 = new Manager(q1_RM, q2_MC, db_Orders, dq);
+  //Manager sc3 = new Manager(q1_RM, q2_MC, db_Orders, dq);
+  //Manager sc4 = new Manager(q1_RM, q2_MC, db_Orders, dq);
+
+  Chef sca = new Chef(q2_MC, q3_CW, db_Orders);
+  sca.initChef();
+  Chef sca2 = new Chef(q2_MC, q3_CW, db_Orders);
+  sca2.initChef();
+  //Chef sca3 = new Chef(q2_MC, q3_CW, db_Orders);
+  //sca3.initChef();
+  //Chef sca4 = new Chef(q2_MC, q3_CW, db_Orders);
+  //sca4.initChef();
+
+  Waiter p = new Waiter(q3_CW, db_Orders, stat);
+  //Waiter p2 = new Waiter(q3_CW, db_Orders, stat);
+  //Waiter p3 = new Waiter(q3_CW, db_Orders, stat);
+
+  /* CLIENTS */
+  Client c1 = new Client(1, lb);
+  Client c2 = new Client(2, lb);
+  Client c3 = new Client(3, lb);
+  Client c4 = new Client(4, lb);
+  Client c5 = new Client(5, lb);
+  Client c6 = new Client(6, lb);
+  Client c7 = new Client(7, lb);
+  Client c8 = new Client(8, lb);
+  /* COMPLETED ORDER LIST of SANDWICH(ES) */
+  List<Sandwich_ID> l1 = list[-4, -2, -3];
+  List<Sandwich_ID> l2 = list[-4, -2, -3];
+  List<Sandwich_ID> l3 = list[-4, -2, -3];
+  List<Sandwich_ID> l4 = list[-4, -2, -3];
+  List<Sandwich_ID> l5 = list[-4, -2, -3];
+  List<Sandwich_ID> l6 = list[-4, -1];
+  List<Sandwich_ID> l7 = list[-4, -2, -3];
+  List<Sandwich_ID> l8 = list[-3, -2, -3];
+  List<Sandwich_ID> l9 = list[-4, -2, -3];
+  List<Sandwich_ID> l10 = list[-4, -2, -3];
+  List<Sandwich_ID> l11 = list[-4, -2, -3];
+  List<Sandwich_ID> l12 = list[-2, -2, -3];
+  List<Sandwich_ID> l13 = list[-4, -2, -3];
+  List<Sandwich_ID> l14 = list[-4, -2, -3];
+  List<Sandwich_ID> l15 = list[-4, -2, -3];
+  List<Sandwich_ID> ltest = list[-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2];
+
+  /*
+  c2!sendOrder(l1, 2, 10, 40);
+  c4!sendOrder(l4, 3, 10, 40);
+  c7!sendOrder(l12, 1, 5, 40);
+  c2!sendOrder(ltest, 1, 20, 100);
+  */
+
+  await duration(500, 500);
+  println("*********STATISTIC*************");
+  Int stat1 = stat.get_success_delivery();
+  Int stat2 = stat.get_failed_delivery();
+  Int stat3 = stat.get_changed_endtime();
+  Int stat4 = stat.get_unchanged_endtime();
+  Int stat5 = stat.get_total_order();
+  println("Success delivery: "+ toString(stat1));
+  println("Failed delivery: " + toString(stat2));
+  println("Changed endtime: " + toString(stat3));
+  println("Unchanged endtime: " + toString(stat4));
+  println("Total order: " + toString(stat5));
+  println("*********FINISHED**************");
+}

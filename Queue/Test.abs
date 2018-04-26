@@ -1,0 +1,47 @@
+module Test;	
+import * from Queue;
+
+{
+
+	/* CREATE TASKS */
+      Task t1 = new Task(1);
+      Task t2 = new Task(2);
+      Task t3 = new Task(3);
+      Task t4 = new Task(4);
+      Task t5 = new Task(5);
+      Task t6 = new Task(6);
+
+      /* CREATE A QUEUE */
+      Queue q1 = new Queue(23);
+
+      /* OPERATION */
+      // 1 . Her sjekker vi om vi kan legge til og fjerne den første fra køen.
+      println("Test 1 ... Start");
+      q1.insert(t1);
+      q1.getTask();
+      Int b = q1.getQueueLength();
+      if(b == 0){ println("Test 1 ... Success"); }
+      else { println("Test 1 ... Failed"); }
+      // 2. Her starter vi med getTask() for å sjekke om det går forbi og utfører sendere  
+      println("Test 2 ... Start");
+      q1!getTask();
+      q1.insert(t1);
+      q1.insert(t3);
+      q1.insert(t2);
+      q1.getTask();
+      q1!getTask();
+      q1!getTask();
+      q1!getTask();
+      q1!getTask();
+      q1.insert(t4);
+      q1.insert(t4);
+      q1.insert(t6);
+      q1.insert(t5);
+      b = q1.getQueueLength();
+      println("End of operations, we have "+ toString(b));
+      println("Task 2 ... Success");
+}
+/*
+Jeg forstår det slik at hvis jeg bruker Utropstegn så sjekker jeg om det finnes og leggeer i køen og går videre. Så hvis vi trenger å hente ut noe, men ikke nødvendig med rekkekeføølge, så går det bra :)
+men punktum ved metode kall, så er det slik at jeg er avhengig av å få svar for å gå videre.
+*/

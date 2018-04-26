@@ -1,0 +1,90 @@
+module Load_balancer;
+export *;
+import * from Config;
+
+/*
+* Class to specify LoadBalancer
+* The LoadBalancer will decide which worker gets the next job
+*/
+interface LoadBalancer {
+  Unit getReceptionist(Data c);
+  Unit releaseReceptionist(Receptionist r);
+  Unit addReceptionist(Receptionist r);
+  Receptionist firingReceptionist();
+  Int getNbrAvailableW();
+  Int getNbrInuseW();
+  Unit printSystem(Queue receptionist_manager, Queue manager_chef, Queue chef_waiter);
+}
+
+class RoundRobinLoadBalancer() implements LoadBalancer {
+  List<Receptionist> available = Nil;
+  List<Receptionist> inuse = Nil;
+
+  Unit print(){
+    Int naval = this.getNbrAvailableW();
+    Int inUse = this.getNbrInuseW();
+    if(give_print_id() == 0){println("*********************************************");}
+    printTC(timeValue(now()), "Available receptionist: " + toString(naval));
+    printTC(timeValue(now()), "In use receptionists: " + toString(inUse));
+    printTC(timeValue(now()), "Total Receptionist: " + toString(naval+inUse));
+    if(give_print_id() == 0){println("**********************************************");}
+  }
+
+
+  Unit getReceptionist(Data order){
+    await (available != Nil);
+    Receptionist r = head(available);
+    available = tail(available);
+    inuse = appendright(inuse, r);
+    this.print();
+    Int client_id = client(order).get_client_id();
+    printOrder(client_id, sandwiches(order), repetitions(order), repetitionsInterval(order), endTime(order));
+    r!doTask(order);
+  }
+
+  Unit releaseReceptionist(Receptionist r){
+    available = appendright(available, r);
+    inuse = without(inuse, r);
+    this.print();
+  }
+
+  Unit addReceptionist(Receptionist r){
+    available = appendright(available, r);
+    this.print();
+  }
+
+  Receptionist firingReceptionist(){
+    await (available != Nil);
+    Receptionist r = head(reverse(available));
+    available =  without(available, r);
+    this.print();
+    return r;
+  }
+
+  Int getNbrAvailableW() {
+    Int a =length(available);
+    return a;
+  }
+
+  Int getNbrInuseW() {
+    Int i = length(inuse);
+    return i;
+  }
+
+
+  Unit printSystem(Queue receptionist_manager, Queue manager_chef, Queue chef_waiter){
+    Int rm_l = receptionist_manager.getQueueLength();
+    Int mc_l = manager_chef.getQueueLength();
+    Int cw_l = chef_waiter.getQueueLength();
+    while(give_print_id() == 2 && truncate(timeValue(now())) < 200){
+      print("\n[Time " + toString(timeValue(now())) + "]" +" [Receptionist_Manager] " +
+      toString(rm_l));
+      print("\t[Manager-Chef] " + toString(mc_l));
+      print("\t[Chef-Waiter] " + toString(cw_l));
+      await duration(1,1);
+      rm_l = receptionist_manager.getQueueLength();
+      mc_l = manager_chef.getQueueLength();
+      cw_l = chef_waiter.getQueueLength();
+    }
+  }
+}

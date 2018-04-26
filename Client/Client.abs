@@ -1,0 +1,22 @@
+module Client;
+export *;
+import * from Config;
+
+interface Client{
+	Unit sendOrder(List<Sandwich_ID> sandwiches, Int repetitions, Int repetitionsInterval, Int endTime);
+	Unit giveMessage(String msg);
+	Int get_client_id();
+}
+
+class Client(Int client_id, LoadBalancer lb) implements Client{
+	Unit sendOrder(List<Sandwich_ID> sandwiches, Int repetitions, Int repetitionsInterval, Int endTime){
+		Data order = Order(this, sandwiches, repetitions, repetitionsInterval, 0, endTime);
+		await lb!getReceptionist(order);
+	}
+	Unit giveMessage(String msg){ // Component Waiter use this function
+		printTCLC(timeValue(now()), client_id, "får melding om:" + msg);
+	}
+	Int get_client_id(){
+		return client_id;
+	}
+}

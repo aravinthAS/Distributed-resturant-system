@@ -1,0 +1,67 @@
+[Time: 1] Available workers:1
+[Time: 1] In use workers:0
+[Time: 1] NUMBER OF WORKERS IS 1
+***********************************************************************************
+[Time: 1] Available workers:1
+[Time: 1] Queue Length in channel 42: 0
+***********************************************************************************
+[Time: 1] In use workers:0
+[Time: 1] NUMBER OF WORKERS IS 1
+***********************************************************************************
+[Time: 2] Available workers:2
+[Time: 2] In use workers:0
+[Time: 2] NUMBER OF WORKERS IS 2
+***********************************************************************************
+[Time: 3] Available workers:3
+[Time: 3] In use workers:0
+[Time: 3] NUMBER OF WORKERS IS 3
+***********************************************************************************
+[Time: 4] Available workers:4
+[Time: 4] In use workers:0
+[Time: 4] NUMBER OF WORKERS IS 4
+***********************************************************************************
+[Time: 5] Available workers:3
+[Time: 5] In use workers:1
+[Time: 5] NUMBER OF WORKERS IS 4
+***********************************************************************************
+[Time: 5] In channel 42: Added a new Task, Task ID: 0
+[Time: 6] Available workers:2
+[Time: 6] In use workers:2
+[Time: 6] NUMBER OF WORKERS IS 4
+***********************************************************************************
+[Time: 6] Queue Length in channel 42: 1
+***********************************************************************************
+[Time: 6] In channel 42: Added a new Task, Task ID: 1
+[Time: 7] Available workers:2
+[Time: 7] In use workers:2
+[Time: 7] NUMBER OF WORKERS IS 4
+***********************************************************************************
+[Time: 7] Queue Length in channel 42: 2
+***********************************************************************************
+[Time: 7] Available workers:2
+[Time: 7] In use workers:2
+[Time: 7] NUMBER OF WORKERS IS 4
+***********************************************************************************
+[Time: 7] In channel 42: Added a new Task, Task ID: 2
+[Time: 8] Available workers:2
+[Time: 8] In use workers:2
+[Time: 8] NUMBER OF WORKERS IS 4
+***********************************************************************************
+[Time: 8] Queue Length in channel 42: 3
+***********************************************************************************
+[Time: 8] Available workers:2
+[Time: 8] In use workers:2
+[Time: 8] NUMBER OF WORKERS IS 4
+***********************************************************************************
+*********FINISHED**************
+[Time: 8] In channel 42: Added a new Task, Task ID: 3
+[Time: 9] Available workers:3
+[Time: 9] In use workers:1
+[Time: 9] NUMBER OF WORKERS IS 4
+***********************************************************************************
+[Time: 9] Queue Length in channel 42: 4
+***********************************************************************************
+[Time: 10] Available workers:4
+[Time: 10] In use workers:0
+[Time: 10] NUMBER OF WORKERS IS 4
+***********************************************************************************

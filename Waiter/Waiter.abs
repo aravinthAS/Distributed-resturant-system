@@ -1,0 +1,32 @@
+module Waiter;
+export *;
+import * from Config;
+
+interface Waiter{
+
+}
+
+class Waiter(Queue q_in, DB db, Stat stat) implements Waiter{
+  Int global = 0;
+  Unit run(){
+    Data_ID db_id = await q_in!getTask();
+    Data order = await db!getData(db_id);
+
+    Int endTime = endTime(order);
+    Int rep_interval = repetitionsInterval(order);
+    Client cli = client(order);
+    await cli!giveMessage("DONE");
+    global = global + 1;
+    Int now = truncate(timeValue(now()));
+    Int cli_id = cli.get_client_id();
+    printTC(timeValue(now()),"[Waiter] "+"Client id: " +toString(cli_id) + " Order cost: "+ toString(orderCost(order)));
+    if(endTime >= now){
+      println("YESSS!("+ toString(global)+") Endtime: "+ toString(endTime) + "\t now: "+ toString(now));
+      stat.increase_success_delivery();
+    }else{
+      println("NOOOO!("+ toString(global) +") Endtime: "+ toString(endTime) + "\t now: "+ toString(now));
+      stat.increase_failed_delivery();
+    }
+    this!run();
+  }
+}

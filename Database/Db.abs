@@ -1,0 +1,47 @@
+module Database;
+export *;
+import * from Config;
+
+/*
+* Functions:
+* add data - parameter: Task or something - return id from message queue
+* remove data - parameter: data/task id - return id and print out details
+* update data - parameteer: maybe the object Task - update data and print out the changes
+* get data - parameter: data_id / task_id - get out the object Task with same id
+*/
+interface DB{
+	Data_ID insertData(Data c);
+	Data_ID removeData(Data_ID db_id);
+	Unit updateData(Data_ID db_id, Data c);
+	Data getData(Data_ID db_id);
+	Map<Data_ID, Data> getDatabase();
+}
+
+class Database(String database_name) implements DB{
+	Map<Data_ID, Data> container = map[];
+	Data_ID db_counter = 1;
+
+	Data_ID insertData(Data c){
+		Data_ID db_id = db_counter;
+		db_counter = db_counter + 1;
+		if(lookup(container, db_id) == Nothing){
+			container = insert(container, Pair(db_id, c));
+		}
+		return db_id;
+	}
+	Data_ID removeData(Data_ID db_id){
+		if(lookup(container, db_id) != Nothing){
+			container = removeKey(container, db_id);
+		}
+		return db_id;
+	}
+	Unit updateData(Data_ID db_id, Data c){
+		container = insert(container, Pair(db_id, c));
+	}
+	Data getData(Data_ID db_id){
+		return fromJust(lookup(this.container, db_id));
+	}
+	Map<Data_ID, Data> getDatabase(){
+		return container;
+	}
+}

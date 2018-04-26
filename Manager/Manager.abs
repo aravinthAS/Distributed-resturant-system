@@ -1,0 +1,86 @@
+module Manager;
+export *;
+import * from Config;
+
+/*
+* 1. Hente oppgaven fra køen
+* 2. bruke db_iden for hente dataen fra Databasen(Command c)
+* 3. Pakke ut Command c og sjekke om repetitions er større enn 1
+* 3.1 hvis repetitions er større enn 1, så blir sende til delay kø.
+* 3.2 skrive ut tilbake til databasen(update command)
+* 4. sende oppgaven videre til neste kø, som er til Manager-Chef køen
+*/
+
+
+interface Manager{
+}
+
+class Manager(Queue q_in, Queue q_out, DB db, DelayQueue dq, Stat stat) implements Manager{
+	Unit run(){
+		Data_ID db_id = await q_in!getTask();
+		//Henter orders detaljer
+		Data order = await db!getData(db_id);
+		Int endTime = endTime(order);
+		List <Sandwich_ID> l = sandwiches(order);
+		Int cost = orderCost(order);
+		//Beregner kosten for sandwichene som må lages på en order, 1 repetion
+		if(cost == 0){
+			cost = this.cost_calculation(l);
+
+		}
+		//Lager duplikater av samme bestilling hvis repetion er større enn 1, ellers oppdaterer cost
+		this.duplicate_order(db_id, order, cost);
+
+		Int now = truncate(timeValue(now()));
+		Int startTime = endTime - cost;
+		Int delayInterval = startTime - now;
+
+		Int emergency_alert = dq.emergency_alert();
+		if (emergency_alert == 0 && startTime > now){
+			await dq!waiting(db_id, startTime, delayInterval);
+		}else{
+			await q_out!insert(db_id);
+		}
+		this!run();
+	}
+
+	Int cost_calculation(List <Sandwich_ID> l){
+		Sandwich_ID san_id = -1;
+		Int cnt_same_sandwich = 0;
+		Int list_length = length(l);
+		Int cost = 0;
+		while(l != Nil){
+			san_id = head(l);
+			Data sandwich = db.getData(san_id);
+			l = without(l, san_id);
+			cnt_same_sandwich = list_length - length(l);
+			if(cnt_same_sandwich > 1){
+				//cost = truncate((cost + cost(sandwich) + (cost(sandwich) * cnt_same_sandwich) / (cost(sandwich) + cnt_same_sandwich-2)));
+				cost = truncate((cost + cost(sandwich) + ((cost(sandwich)/2)*cnt_same_sandwich)));
+			}else{
+				cost = cost + cost(sandwich);
+			}
+			list_length = length(l);
+		}
+		return cost;
+	}
+
+	Unit duplicate_order(Data_ID db_id, Data order, Int cost){
+		Int reps = repetitions(order);
+		Int now = truncate(timeValue(now()));
+		Int endTime = endTime(order);
+		Int startTime = endTime - cost;
+		Int rep_interval = repetitionsInterval(order);
+		while(reps > 1){
+			Data duplicate_order = Order(client(order), sandwiches(order), 1, rep_interval, cost, endTime + (rep_interval * (reps - 1)));
+			Data_ID db_id2 = await db!insertData(duplicate_order);
+			Int newStartTime = startTime + (rep_interval * (reps - 1));
+			dq!waiting(db_id2, newStartTime, newStartTime - now);
+			stat.increase_total_order();
+			reps = reps - 1;
+		}
+		order = Order(client(order), sandwiches(order), 1, rep_interval, cost, endTime);
+		db.updateData(db_id, order);
+	}
+
+}
