@@ -26,8 +26,8 @@ class Manager(Queue q_in, Queue q_out, DB db, DelayQueue dq, Stat stat) implemen
 		//Beregner kosten for sandwichene som må lages på en order, 1 repetion
 		if(cost == 0){
 			cost = this.cost_calculation(l);
-
 		}
+
 		//Lager duplikater av samme bestilling hvis repetion er større enn 1, ellers oppdaterer cost
 		this.duplicate_order(db_id, order, cost);
 
@@ -35,9 +35,9 @@ class Manager(Queue q_in, Queue q_out, DB db, DelayQueue dq, Stat stat) implemen
 		Int startTime = endTime - cost;
 		Int delayInterval = startTime - now;
 
-		Int emergency_alert = dq.emergency_alert();
+		Int emergency_alert = await dq!emergency_alert();
 		if (emergency_alert == 0 && startTime > now){
-			await dq!waiting(db_id, startTime, delayInterval);
+			dq!waiting(db_id, startTime, delayInterval);
 		}else{
 			await q_out!insert(db_id);
 		}
@@ -72,9 +72,10 @@ class Manager(Queue q_in, Queue q_out, DB db, DelayQueue dq, Stat stat) implemen
 		Int startTime = endTime - cost;
 		Int rep_interval = repetitionsInterval(order);
 		while(reps > 1){
-			Data duplicate_order = Order(client(order), sandwiches(order), 1, rep_interval, cost, endTime + (rep_interval * (reps - 1)));
-			Data_ID db_id2 = await db!insertData(duplicate_order);
 			Int newStartTime = startTime + (rep_interval * (reps - 1));
+			Int newEndTime = endTime + (rep_interval * (reps - 1));
+			Data duplicate_order = Order(client(order), sandwiches(order), 1, rep_interval, cost, newEndTime);
+			Data_ID db_id2 = await db!insertData(duplicate_order);
 			dq!waiting(db_id2, newStartTime, newStartTime - now);
 			stat.increase_total_order();
 			reps = reps - 1;

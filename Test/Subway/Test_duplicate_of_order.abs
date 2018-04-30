@@ -68,7 +68,6 @@ import * from Config;
   lb!printSystem(q1_RM, q2_MC, q3_CW);
 
   Receptionist f1 = new Receptionist(db_Orders, q1_RM, lb, stat);
-
   lb.addReceptionist(f1);
 
   Manager sc = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);

@@ -14,14 +14,14 @@ interface Queue{
 class Queue(Channel channelId) implements Queue {
   List<Data_ID> inQueue = Nil;
 
-  Unit run(){
+  Unit print(){
     Int ql = await this!getQueueLength();
     printTCHC(timeValue(now()), channelId, "Queue Length: " + toString(ql));
   }
   Data_ID insert(Data_ID db_id){ //maybe change name to addTask
     inQueue = appendright(inQueue, db_id);
     printTCHC(timeValue(now()), channelId,"Added a new Task, Task ID: "+ toString(db_id));
-    this!run();
+    this!print();
     return db_id;
   }
   Data_ID getTask(){

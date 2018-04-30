@@ -1,1 +1,0 @@
-absc -erlang Subway/Test_overload_with_multiple_receptionists.abs ../Receptionist/Receptionist.abs ../Stat/Stat.abs ../Client/Client.abs ../LoadBalancer/Load_balancer.abs ../Manager/Manager.abs ../Queue/Queue.abs ../Chef/Chef.abs ../Waiter/Waiter.abs ../Database/Db.abs ../Queue/DelayQueue.abs ../config.abs && ./gen/erl/run

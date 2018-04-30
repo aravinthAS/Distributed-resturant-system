@@ -124,7 +124,7 @@ import * from Config;
   c2!sendOrder(l1, 1, 10, 30);
   c1!sendOrder(l2, 1, 10, 30);
   c3!sendOrder(l1, 1, 10, 30);
-  //c4!sendOrder(l1, 1, 10, 30);
+  c4!sendOrder(l1, 1, 10, 30);
 
 //c7!sendOrder(l12, 1, 5, 40);
   //c2!sendOrder(ltest, 1, 20, 140);

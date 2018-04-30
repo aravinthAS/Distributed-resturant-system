@@ -1,3 +1,0 @@
-Start m_Test_overload_with_one_receptionist
-25.40user 2.30system 0:09.61elapsed 288%CPU (0avgtext+0avgdata 194664maxresident)k
-0inputs+20648outputs (0major+102943minor)pagefaults 0swaps

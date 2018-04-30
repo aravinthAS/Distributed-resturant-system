@@ -24,7 +24,7 @@ class DelayQueue(Channel channelId, Queue q_send, DB db, Stat stat) implements D
     Int tmp_cnt_chef = numberOfChefs(systemInfo);
     Int now = truncate(timeValue(now()));
 
-    await this!sort(db_id, startTime, interval_time);
+    await this!checkConflicts(db_id, startTime, interval_time);
     await this!insert(db_id, interval_time);
 
     //delay the order, if the order have rest time
@@ -32,32 +32,35 @@ class DelayQueue(Channel channelId, Queue q_send, DB db, Stat stat) implements D
       await duration(1, 1);
       inQueue = insert(inQueue, Pair(db_id, fromJust(lookup(inQueue, db_id)) - 1));
     }
+
     q_send!insert(db_id);
     this.remove(db_id);
   }
-  Unit sort(Data_ID db_id, Int startTime, Int interval_time){
+  Unit checkConflicts(Data_ID db_id, Int startTime, Int interval_time){
     Set<Data_ID> keys = keys(inQueue);
     Data_ID tmp_id = 0;
     Data systemInfo = db.getData(systemInfo_id());
     Int tmp_cnt_chef = numberOfChefs(systemInfo);
     Int now = truncate(timeValue(now()));
     Data newOrder = db.getData(db_id);
-    Int endTime = endTime(newOrder);
+    Int newEndTime = endTime(newOrder);
 
     while(size(keys) != 0){
       tmp_id = take(keys);
       Data tmp_order = db.getData(tmp_id);
       Int tmp_endtime = endTime(tmp_order);
-      if(startTime < endTime(tmp_order) && (startTime > (endTime(tmp_order) - orderCost(tmp_order)) || endTime(tmp_order) == endTime)){
+      Int tmp_cost = orderCost(tmp_order);
+      Int tmp_startTime = tmp_endtime - tmp_cost;
+
+      if(startTime < tmp_endtime && (startTime > tmp_startTime || tmp_endtime == newEndTime)){
         tmp_cnt_chef = tmp_cnt_chef - 1;
         if(tmp_cnt_chef < 1){
           tmp_order = Order(client(tmp_order), sandwiches(tmp_order), repetitions(tmp_order),
           repetitionsInterval(tmp_order), orderCost(tmp_order), startTime);
           db.updateData(tmp_id, tmp_order);
-          Int tmp_startTime = endTime(tmp_order) - orderCost(tmp_order);
-          inQueue = insert(inQueue, Pair(tmp_id, tmp_startTime - now));
+          Int tmp_newStartTime = endTime(tmp_order) - orderCost(tmp_order);
+          inQueue = insert(inQueue, Pair(tmp_id, tmp_newStartTime - now));
           await stat!increase_changed_endtime();
-          //this.sort(tmp_id, tmp_startTime, tmp_startTime - now);
         }
       }
       keys = remove(keys, tmp_id);
