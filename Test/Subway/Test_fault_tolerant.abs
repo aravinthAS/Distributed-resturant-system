@@ -63,7 +63,7 @@ import * from Config;
   Queue q2_MC = new Queue("Manager-Chef");
   Queue q3_CW = new Queue("Chef-Waiter");
 
-  /* Delay queue */
+  /* Delay Queue */
   DelayQueue dq = new DelayQueue("Delay", q1_RM, db_Orders, stat);
 
   /* Load Balancer */
@@ -78,10 +78,7 @@ import * from Config;
   Manager m = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
 
   /* Chefs */
-  Chef ch = new Chef(q2_MC, q3_CW, db_Orders);
-  ch.initChef();
-  Chef ch2 = new Chef(q2_MC, q3_CW, db_Orders);
-  ch2.initChef();
+  /* NO CHEF ON THE RESTAURANT ON THIS TEST */
 
   /* Waiters */
   Waiter w = new Waiter(q3_CW, db_Orders, stat);

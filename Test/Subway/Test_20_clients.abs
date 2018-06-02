@@ -10,6 +10,7 @@ import * from Config;
   Data systemInfo = SystemInfo(0);
   db_Orders!updateData(0, systemInfo);
 
+  /* Sandwiches */
   Data s1 = Sandwich("Black Forest Ham", list[
   Pair(1, 3),
   Pair(5, 3),
@@ -33,14 +34,14 @@ import * from Config;
   Pair(7, 2),
   Pair(9, 2)], 5);
 
-  /* Sandwiches */
+  /* Add Sandwiches in the database */
   db_Orders!updateData(-1, s1);
   db_Orders!updateData(-2, s2);
   db_Orders!updateData(-3, s3);
   db_Orders!updateData(-4, s4);
   db_Orders!updateData(-5, s5);
 
-  /* INGREDIENTS */
+  /* Add INGREDIENTS in the database */
   db_Orders!updateData(-500, Ingredient("Tomat"));
   db_Orders!updateData(-501, Ingredient("Agurk"));
   db_Orders!updateData(-502, Ingredient("SkiltAgurk"));
@@ -62,42 +63,49 @@ import * from Config;
   Queue q2_MC = new Queue("Manager-Chef");
   Queue q3_CW = new Queue("Chef-Waiter");
 
+  /* Delay queue */
   DelayQueue dq = new DelayQueue("Delay", q1_RM, db_Orders, stat);
 
+  /* Load balancer */
   LoadBalancer lb = new RoundRobinLoadBalancer();
   lb!printSystem(q1_RM, q2_MC, q3_CW);
 
-  Receptionist f1 = new Receptionist(db_Orders, q1_RM, lb, stat);
-  Receptionist f2 = new Receptionist(db_Orders, q1_RM, lb, stat);
-  Receptionist f3 = new Receptionist(db_Orders, q1_RM, lb, stat);
-  Receptionist f4 = new Receptionist(db_Orders, q1_RM, lb, stat);
-  Receptionist f5 = new Receptionist(db_Orders, q1_RM, lb, stat);
+  /* Receptionists */
+  Receptionist r1 = new Receptionist(db_Orders, q1_RM, lb, stat);
+  Receptionist r2 = new Receptionist(db_Orders, q1_RM, lb, stat);
+  Receptionist r3 = new Receptionist(db_Orders, q1_RM, lb, stat);
+  Receptionist r4 = new Receptionist(db_Orders, q1_RM, lb, stat);
+  Receptionist r5 = new Receptionist(db_Orders, q1_RM, lb, stat);
 
-  lb.addReceptionist(f1);
-  //lb.addReceptionist(f2);
-  /*lb.addReceptionist(f3);
-  lb.addReceptionist(f4);
-  lb.addReceptionist(f5);
+  lb.addReceptionist(r1);
+  /*lb.addReceptionist(r2);
+  lb.addReceptionist(r3);
+  lb.addReceptionist(r4);
+  lb.addReceptionist(r5);
   */
-  Manager sc = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
-  //Manager sc2 = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
-  //Manager sc3 = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
-  //Manager sc4 = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
 
-  Chef sca = new Chef(q2_MC, q3_CW, db_Orders);
-  sca.initChef();
-  Chef sca2 = new Chef(q2_MC, q3_CW, db_Orders);
-  sca2.initChef();
-  Chef sca3 = new Chef(q2_MC, q3_CW, db_Orders);
-  sca3.initChef();
-  Chef sca4 = new Chef(q2_MC, q3_CW, db_Orders);
-  sca4.initChef();
-  Chef sca5 = new Chef(q2_MC, q3_CW, db_Orders);
-  sca5.initChef();
-  //Chef sca6 = new Chef(q2_MC, q3_CW, db_Orders);
-  //sca6.initChef();
+  /* Managers */
+  Manager m = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
+  //Manager m2 = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
+  //Manager m3 = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
+  //Manager m4 = new Manager(q1_RM, q2_MC, db_Orders, dq, stat);
 
-  Waiter p = new Waiter(q3_CW, db_Orders, stat);
+  /* Chefs */
+  Chef ch = new Chef(q2_MC, q3_CW, db_Orders);
+  ch.initChef();
+  Chef ch2 = new Chef(q2_MC, q3_CW, db_Orders);
+  ch2.initChef();
+  Chef ch3 = new Chef(q2_MC, q3_CW, db_Orders);
+  ch3.initChef();
+  Chef ch4 = new Chef(q2_MC, q3_CW, db_Orders);
+  ch4.initChef();
+  Chef ch5 = new Chef(q2_MC, q3_CW, db_Orders);
+  ch5.initChef();
+  //Chef ch6 = new Chef(q2_MC, q3_CW, db_Orders);
+  //ch6.initChef();
+
+  /* Waiters */
+  Waiter w = new Waiter(q3_CW, db_Orders, stat);
   //Waiter p2 = new Waiter(q3_CW, db_Orders, stat);
   //Waiter p3 = new Waiter(q3_CW, db_Orders, stat);
 
@@ -123,6 +131,7 @@ import * from Config;
   Client c19 = new Client(19, lb);
   Client c20 = new Client(20, lb);
 
+  /* Sandwich-lists */
   List<Sandwich_ID> l1 = list[-4, -2, -3];
   List<Sandwich_ID> l2 = list[-1];
   List<Sandwich_ID> l3 = list[-2, -3];
@@ -134,44 +143,28 @@ import * from Config;
   List<Sandwich_ID> l9 = list[-2, -3, -2];
   List<Sandwich_ID> l10 = list[-1, -5];
 
-
+  /* Clients - send - orders */
   c1!sendOrder(l1, 3, 100, 50);
   c2!sendOrder(l2, 1, 140, 80);
   c3!sendOrder(l3, 5, 130, 60);
-  c3!sendOrder(l4, 3, 50, 70);
-  c3!sendOrder(l5, 2, 40, 40);
-  c3!sendOrder(l6, 3, 70, 30);
-  c3!sendOrder(l7, 5, 60, 100);
-  c3!sendOrder(l8, 6, 70, 60);
-  c3!sendOrder(l9, 3, 50, 80);
-  c3!sendOrder(l10, 5, 60, 60);
-  c3!sendOrder(l1, 7, 50, 60);
-  c3!sendOrder(l2, 3, 30, 70);
-  c3!sendOrder(l3, 4, 70, 40);
-  c3!sendOrder(l4, 5, 40, 70);
-  c3!sendOrder(l5, 6, 30, 50);
-  c3!sendOrder(l6, 3, 50, 120);
-  c3!sendOrder(l7, 7, 70, 40);
-  c3!sendOrder(l8, 3, 30, 63);
-  c3!sendOrder(l9, 6, 80, 67);
-  c3!sendOrder(l10, 7, 30, 64);
+  c4!sendOrder(l4, 3, 50, 70);
+  c5!sendOrder(l5, 2, 40, 40);
+  c6!sendOrder(l6, 3, 70, 30);
+  c7!sendOrder(l7, 5, 60, 100);
+  c8!sendOrder(l8, 6, 70, 60);
+  c9!sendOrder(l9, 3, 50, 80);
+  c10!sendOrder(l10, 5, 60, 60);
+  c11!sendOrder(l1, 7, 50, 60);
+  c12!sendOrder(l2, 3, 30, 70);
+  c13!sendOrder(l3, 4, 70, 40);
+  c14!sendOrder(l4, 5, 40, 70);
+  c15!sendOrder(l5, 6, 30, 50);
+  c16!sendOrder(l6, 3, 50, 120);
+  c17!sendOrder(l7, 7, 70, 40);
+  c18!sendOrder(l8, 3, 30, 63);
+  c19!sendOrder(l9, 6, 80, 67);
+  c20!sendOrder(l10, 7, 30, 64);
 
-  //c7!sendOrder(l12, 1, 5, 40);
-  //c2!sendOrder(ltest, 1, 20, 140);
-  /*
-  c1!sendCommand("LA MEG OGSÅ SENDE", 4, 20);
-  c2!sendCommand("DJKJD", 5, 10);
-  c2!sendCommand("jfkdls", 1, 2);
-  c2!sendCommand("Dette er test", 7, 10);
-  c1!sendCommand("LA MEG OGSÅ SENDE", 4, 20);
-  c2!sendCommand("DJKJD", 5, 0);
-  c2!sendCommand("jfkdls", 1, 0);
-  c2!sendCommand("Dette er test", 7, 0);
-  c1!sendCommand("LA MEG OGSÅ SENDE", 4, 0);
-  c2!sendCommand("DJKJD", 5, 1);
-  c2!sendCommand("jfkdls", 1, 2);
-  */
-  //c2!sendCommand("Se om Klienten kan sende en kommand til, mens han venter på svar", 3, 10);
   await duration(1000, 1000);
   println("*********STATISTIC*************");
   Int stat1 = stat.get_success_delivery();

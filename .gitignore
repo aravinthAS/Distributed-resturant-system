@@ -1,0 +1,6 @@
+# Runnable file
+gen/
+*.dump
+
+Frontend/
+Presenter/
